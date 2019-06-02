@@ -1,12 +1,12 @@
 import numpy as np
 import torch
-from myenv.hvenv import hvenv
+from myenv.hvenv_nstep import hvenv
 from rlnnet.rl_dqn import DQN
 import torch.nn.functional as F
 import collections
 import torch.nn as nn
-import time
 import datetime
+import string
 
 
 Experience = collections.namedtuple('Experience', field_names=['obs','obs_next', 'delta_v', 'reward', 'done'])
@@ -15,8 +15,16 @@ SYC_NUM = 2000
 BUFFER_START_NUM = 30000
 BUFFER_MAX_NUM = 300000
 
+## 步数设定是全局变量
+step_num = 2
 
 
+def int_to_list(int_num):
+    b = []
+    str = bin(int_num).replace('0b', '')
+    for c in str:
+        b.append(int(c))
+    return  b
 
 def main():
     cuda0 = torch.device('cuda:0')
@@ -30,14 +38,14 @@ def main():
     start_time = datetime.datetime.now()
 
     hv_env_num = 5
-    envs = hvenv('../data',v_state_num, v_num, hv_env_num)
+    envs = hvenv('../data',v_state_num, v_num, hv_env_num,step_num)
 
     hv_env_num_val=10
-    envs_val = hvenv('../data',v_state_num, v_num, hv_env_num_val)
+    envs_val = hvenv('../data',v_state_num, v_num, hv_env_num_val,step_num)
 
 
-    rlnnet = DQN(4*v_num,2).to(cuda0)
-    rln_tgt_net = DQN(4*v_num,2).to(cuda0)
+    rlnnet = DQN(4*v_num,2**step_num).to(cuda0)
+    rln_tgt_net = DQN(4*v_num,2**step_num).to(cuda0)
     optimizer = torch.optim.Adam(params=rlnnet.parameters(), lr=learning_rate)
     exp_buffer = collections.deque()
     exp_buffer_val = collections.deque()
@@ -50,6 +58,8 @@ def main():
     obs_val = envs_val.reset()
 
     i = 0
+
+
     while True:
 
         if i % SYC_NUM == 0:
@@ -67,7 +77,7 @@ def main():
 
             epsilon *= 0.999
 
-            torch.save(rlnnet, 'ddqn_best_model.pth')
+            torch.save(rlnnet, '../weight/dqn_2step_best_model.pth')
             rln_tgt_net.load_state_dict(rlnnet.state_dict())
 
         if epsilon < 0.1:
@@ -93,6 +103,9 @@ def main():
                                                        1000, 2000)
             print('-------eval end-------')
 
+
+
+
 def batch_sample(exp_batch_index,exp_buffer):
     states, next_states, actions, rewards, dones = zip(*[exp_buffer[idx] for idx in exp_batch_index])
     return np.array(states), np.array(actions), np.array(rewards, dtype=np.float32), \
@@ -102,6 +115,12 @@ def batch_sample(exp_batch_index,exp_buffer):
 def calc_loss(batch, net, tgt_net, device):
     states, actions, rewards, dones, next_states = batch
     actions = (actions+1)/2
+    multiple_list = []
+    for i in range(step_num):
+        multiple_list.insert(0,2**i)
+    multiple_array = np.array(multiple_list)
+
+    actions = (multiple_array * actions).sum(1)
     actions_v = torch.Tensor(actions).to(device)
     rewards_v = torch.Tensor(rewards).to(device)
 
@@ -119,8 +138,7 @@ def calc_loss(batch, net, tgt_net, device):
     done_mask = torch.ByteTensor(dones).to(device)
 
     state_action_values = net(states_v).gather(1, actions_v.long().unsqueeze(-1)).squeeze(-1)
-    next_action_value = net(next_states_v).max(1)[1]
-    next_state_values = tgt_net(next_states_v)[:,1]*next_action_value.float()+tgt_net(next_states_v)[:,0]*(1-next_action_value.float())
+    next_state_values = tgt_net(next_states_v).max(1)[0]
     next_state_values[done_mask] = 0.0
     next_state_values = next_state_values.detach()
 
@@ -214,9 +232,17 @@ def action_choose(nnet,envs,obs,epsilon,device):
     if np.random.random()<epsilon:
         delta_v = envs.random_delta_v()
     else:
+        delta_v_total = []
         delta_v_p_raw = nnet(torch.Tensor(obs_input).to(device).float())
         delta_v_index = torch.max(delta_v_p_raw,1)[1]
-        delta_v = delta_v_index.cpu().numpy()*2-1
+        delta_v_list = np.array(delta_v_index.cpu()).tolist()
+        for v in delta_v_index:
+            v_list = int_to_list(v)
+            if len(v_list)< step_num:
+                for _ in range(step_num-len(v_list)):
+                    v_list.insert(0,0)
+            delta_v_total.append(np.array(v_list))
+        delta_v = np.array(delta_v_total)*2-1
 
     return  delta_v
 

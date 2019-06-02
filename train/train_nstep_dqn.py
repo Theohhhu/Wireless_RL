@@ -72,12 +72,13 @@ def main():
             print('v_num: '+str(v_num))
             print('hv_env_num: '+str(hv_env_num))
             print('batch_size: '+str(batch_size))
+            print('step_num: '+str(step_num))
             print('----------------------------')
 
 
             epsilon *= 0.999
 
-            torch.save(rlnnet, '../weight/dqn_2step_best_model.pth')
+            torch.save(rlnnet, '../weight/dqn_'+str(step_num)+'step_best_model.pth')
             rln_tgt_net.load_state_dict(rlnnet.state_dict())
 
         if epsilon < 0.1:

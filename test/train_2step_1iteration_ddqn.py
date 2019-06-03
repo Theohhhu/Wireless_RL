@@ -28,10 +28,12 @@ def int_to_list(int_num):
 
 def main():
     cuda0 = torch.device('cuda:0')
-    v_num = 16
+    v_num = 64
     # discount_gamma = 0.9
-    epsilon = 1
+    epsilon = 0
     learning_rate = 0.001
+    epsilon_cut = 0.99
+    epsilon_min = 0
 
     #跟新轮次设定
     iteration_num = 1
@@ -40,10 +42,10 @@ def main():
     batch_size = 100
     start_time = datetime.datetime.now()
 
-    hv_env_num = 5
+    hv_env_num = 50
     envs = hvenv('../data',v_state_num, v_num, hv_env_num,step_num,iteration_num)
 
-    hv_env_num_val=10
+    hv_env_num_val=1000
     envs_val = hvenv('../data',v_state_num, v_num, hv_env_num_val,step_num,iteration_num)
 
 
@@ -78,16 +80,17 @@ def main():
             print('step_num: '+str(step_num))
             print('iteration_num: '+str(iteration_num))
             print('BUFFER_START_NUM: '+str(BUFFER_START_NUM))
+            print('BUFFER_length_NUM: '+str(len(exp_buffer)))
             print('----------------------------')
 
 
-            epsilon *= 0.999
+            epsilon *= epsilon_cut
 
             torch.save(rlnnet, '../weight/ddqn_'+str(step_num)+'step_'+str(iteration_num)+'iteration_best_model.pth')
             rln_tgt_net.load_state_dict(rlnnet.state_dict())
 
-        if epsilon < 0.1:
-            epsilon = 0.1
+        if epsilon < epsilon_min:
+            epsilon = epsilon_min
 
         i += 1
 
@@ -107,7 +110,8 @@ def main():
             print('-------eval testing: epsilon = 0 -------')
             for _ in range(int(v_num*iteration_num/step_num)):
                 exp_buffer_val, obs_val, reward_val = fresh_exp_buffer(exp_buffer_val, rlnnet, envs_val, obs_val, 0, cuda0, reward_val,
-                                                       1000, 2000)
+                                                       100000, 110000)
+            print('length buffer: ' + str(len(exp_buffer_val)))
             print('-------eval end-------')
 
 

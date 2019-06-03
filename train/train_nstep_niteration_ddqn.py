@@ -16,7 +16,7 @@ BUFFER_START_NUM = 30000
 BUFFER_MAX_NUM = 300000
 
 ## 步数设定是全局变量 可取v_num的任意约数 包含v_num 不含1
-step_num = 8
+step_num = 4
 
 
 def int_to_list(int_num):
@@ -34,7 +34,7 @@ def main():
     learning_rate = 0.001
 
     #跟新轮次设定
-    iteration_num = 4
+    iteration_num = 2
 
     v_state_num = 2
     batch_size = 100
@@ -77,6 +77,7 @@ def main():
             print('batch_size: '+str(batch_size))
             print('step_num: '+str(step_num))
             print('iteration_num: '+str(iteration_num))
+            print('BUFFER_START_NUM: '+str(BUFFER_START_NUM))
             print('----------------------------')
 
 
@@ -101,10 +102,11 @@ def main():
         loss_t.backward()
         optimizer.step()
 
-        if i%10000==0:
+        if i%1000==0:
             rlnnet.eval()
             print('-------eval testing: epsilon = 0 -------')
-            exp_buffer_val, obs_val, reward_val = fresh_exp_buffer(exp_buffer_val, rlnnet, envs_val, obs_val, 0, cuda0, reward_val,
+            for _ in range(int(v_num*iteration_num/step_num)):
+                exp_buffer_val, obs_val, reward_val = fresh_exp_buffer(exp_buffer_val, rlnnet, envs_val, obs_val, 0, cuda0, reward_val,
                                                        1000, 2000)
             print('-------eval end-------')
 

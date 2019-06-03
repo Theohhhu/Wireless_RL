@@ -12,8 +12,8 @@ import string
 Experience = collections.namedtuple('Experience', field_names=['obs','obs_next', 'delta_v', 'reward', 'done'])
 GAMMA = 0.99
 SYC_NUM = 2000
-BUFFER_START_NUM = 300000
-BUFFER_MAX_NUM = 3000000
+BUFFER_START_NUM = 30000
+BUFFER_MAX_NUM = 300000
 
 ## 步数设定是全局变量 可取v_num的任意约数 包含v_num 不含1
 step_num = 2
@@ -102,10 +102,11 @@ def main():
         loss_t.backward()
         optimizer.step()
 
-        if i%10000==0:
+        if i%1000==0:
             rlnnet.eval()
             print('-------eval testing: epsilon = 0 -------')
-            exp_buffer_val, obs_val, reward_val = fresh_exp_buffer(exp_buffer_val, rlnnet, envs_val, obs_val, 0, cuda0, reward_val,
+            for _ in range(int(v_num*iteration_num/step_num)):
+                exp_buffer_val, obs_val, reward_val = fresh_exp_buffer(exp_buffer_val, rlnnet, envs_val, obs_val, 0, cuda0, reward_val,
                                                        1000, 2000)
             print('-------eval end-------')
 

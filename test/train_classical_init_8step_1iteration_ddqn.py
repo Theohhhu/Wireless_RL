@@ -54,14 +54,17 @@ def main():
     optimizer = torch.optim.Adam(params=rlnnet.parameters(), lr=learning_rate)
     exp_buffer = collections.deque()
     exp_buffer_val = collections.deque()
-
+    reward = envs.reward()
+    reward_val = envs_val.reward()
 
 
 
     obs = envs.reset()
     obs_val = envs_val.reset()
+
     reward = envs.reward()
     reward_val = envs_val.reward()
+
     i = 0
 
 

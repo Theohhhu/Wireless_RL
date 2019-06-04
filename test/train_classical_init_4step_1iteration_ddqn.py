@@ -60,6 +60,7 @@ def main():
 
     obs = envs.reset()
     obs_val = envs_val.reset()
+
     reward = envs.reward()
     reward_val = envs_val.reward()
     i = 0

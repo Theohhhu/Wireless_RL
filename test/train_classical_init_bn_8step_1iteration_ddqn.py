@@ -55,13 +55,12 @@ def main():
     exp_buffer = collections.deque()
     exp_buffer_val = collections.deque()
 
-
-
-
     obs = envs.reset()
     obs_val = envs_val.reset()
+
     reward = envs.reward()
     reward_val = envs_val.reward()
+
     i = 0
 
 

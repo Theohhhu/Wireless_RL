@@ -98,7 +98,7 @@ class hvenv(object):
     #初始化环境 重新选择信道 重新生成变相器 重新计数
     def reset(self):
         hv_batch_index = np.random.choice(np.arange(ENV_TOTAL), size=self.hv_env_num, replace=False)
-        self.v = np.ones((self.hv_env_num, self.v_num))
+        self.v = self.v_total[hv_batch_index].squeeze()
         self.h = self.h_total[hv_batch_index].squeeze().T
         self.count = self.v_num
         self.iter_count = self.iter_num

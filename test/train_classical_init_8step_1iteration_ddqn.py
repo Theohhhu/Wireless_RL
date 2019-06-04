@@ -16,7 +16,7 @@ BUFFER_START_NUM = 30000
 BUFFER_MAX_NUM = 300000
 
 ## 步数设定是全局变量 可取v_num的任意约数 包含v_num 不含1
-step_num = 4
+step_num = 8
 
 
 def int_to_list(int_num):

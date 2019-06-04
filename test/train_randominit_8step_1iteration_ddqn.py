@@ -86,7 +86,7 @@ def main():
 
             epsilon *= epsilon_cut
 
-            torch.save(rlnnet, '../weight/ddqn_'+str(step_num)+'step_'+str(iteration_num)+'iteration_best_model.pth')
+            torch.save(rlnnet, '../weight/ddqn_randominit_'+str(step_num)+'step_'+str(iteration_num)+'iteration_best_model.pth')
             rln_tgt_net.load_state_dict(rlnnet.state_dict())
 
         if epsilon < epsilon_min:

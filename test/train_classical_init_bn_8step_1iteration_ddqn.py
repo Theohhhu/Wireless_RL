@@ -11,7 +11,7 @@ import string
 
 Experience = collections.namedtuple('Experience', field_names=['obs','obs_next', 'delta_v', 'reward', 'done'])
 GAMMA = 0.99
-SYC_NUM = 2000
+SYC_NUM = 200
 BUFFER_START_NUM = 30000
 BUFFER_MAX_NUM = 300000
 

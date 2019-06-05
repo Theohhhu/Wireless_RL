@@ -55,12 +55,11 @@ def main():
     exp_buffer = collections.deque()
     exp_buffer_val = collections.deque()
 
-
-    reward = 0
-    reward_val = 0
-
     obs = envs.reset()
     obs_val = envs_val.reset()
+
+    reward = envs.reward()
+    reward_val = envs_val.reward()
 
     i = 0
 
@@ -167,7 +166,7 @@ def fresh_exp_buffer(exp_buffer, rlnnet, envs, obs, epsilon, cuda0,reward,buf_st
             obs = envs.reset()
             print(np.mean(reward))
 
-            reward = 0
+            reward = envs.reward()
         else:
             exp_unzip(done, exp, exp_buffer)
 
@@ -183,7 +182,7 @@ def fresh_exp_buffer(exp_buffer, rlnnet, envs, obs, epsilon, cuda0,reward,buf_st
             obs = envs.reset()
             print(np.mean(reward))
 
-            reward = 0
+            reward = envs.reward()
         else:
             exp_unzip(done, exp, exp_buffer)
 
@@ -197,7 +196,7 @@ def fresh_exp_buffer(exp_buffer, rlnnet, envs, obs, epsilon, cuda0,reward,buf_st
             obs = envs.reset()
             print(np.mean(reward))
 
-            reward = 0
+            reward = envs.reward()
         else:
             exp_unzip(done, exp, exp_buffer, True)
 

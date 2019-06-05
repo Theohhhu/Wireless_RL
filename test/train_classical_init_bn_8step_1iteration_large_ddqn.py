@@ -31,7 +31,7 @@ def main():
     v_num = 64
     # discount_gamma = 0.9
     epsilon = 0
-    learning_rate = 0.001
+    learning_rate = 0.0001
     epsilon_cut = 0.99
     epsilon_min = 0
 
@@ -85,7 +85,7 @@ def main():
 
             epsilon *= epsilon_cut
 
-            torch.save(rlnnet, '../weight/large_ddqn_classical_init_'+str(step_num)+'step_'+str(iteration_num)+'iteration_best_model.pth')
+            torch.save(rlnnet, '../weight/large_ddqn_classical_init_-4learning_rate'+str(step_num)+'step_'+str(iteration_num)+'iteration_best_model.pth')
             rln_tgt_net.load_state_dict(rlnnet.state_dict())
 
         if epsilon < epsilon_min:

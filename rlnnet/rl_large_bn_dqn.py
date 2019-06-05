@@ -5,13 +5,13 @@ class DQN(nn.Module):
         super(DQN, self).__init__()
 
         self.net = nn.Sequential(
-            nn.Linear(input_size, 4096),
-            nn.BatchNorm1d(4096),
+            nn.Linear(input_size, 8192),
+            nn.BatchNorm1d(8192),
             nn.ReLU(),
-            nn.Linear(4096, 4096),
-            nn.BatchNorm1d(4096),
+            nn.Linear(8192, 8192),
+            nn.BatchNorm1d(8192),
             nn.ReLU(),
-            nn.Linear(4096, 2048),
+            nn.Linear(8192, 2048),
             nn.BatchNorm1d(2048),
             nn.ReLU(),
             nn.Linear(2048, n_actions)

@@ -11,7 +11,7 @@ import string
 
 Experience = collections.namedtuple('Experience', field_names=['obs','obs_next', 'delta_v', 'reward', 'done'])
 GAMMA = 0.99
-SYC_NUM = 200
+SYC_NUM = 1200
 BUFFER_START_NUM = 10000
 BUFFER_MAX_NUM = 100000
 
@@ -42,10 +42,10 @@ def main():
     batch_size = 100
     start_time = datetime.datetime.now()
 
-    hv_env_num = 100
+    hv_env_num = 50
     envs = hvenv('../data',v_state_num, v_num, hv_env_num,step_num,iteration_num)
 
-    hv_env_num_val= 1000
+    hv_env_num_val= 100
     envs_val = hvenv('../data',v_state_num, v_num, hv_env_num_val,step_num,iteration_num)
 
 

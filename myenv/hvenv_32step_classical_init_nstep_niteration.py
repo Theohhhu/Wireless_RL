@@ -1,7 +1,7 @@
 import numpy as np
 import scipy.io as sio
 
-ENV_TOTAL = 1000
+ENV_TOTAL = 100
 
 class hvenv(object):
 

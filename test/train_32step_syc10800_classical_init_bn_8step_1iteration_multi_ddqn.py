@@ -11,7 +11,7 @@ import string
 
 Experience = collections.namedtuple('Experience', field_names=['obs','obs_next', 'delta_v', 'reward', 'done'])
 GAMMA = 0.99
-SYC_NUM = 1200
+SYC_NUM = 10800
 BUFFER_START_NUM = 10000
 BUFFER_MAX_NUM = 100000
 
@@ -112,11 +112,11 @@ def main():
 
         if i%100==0:
             rlnnet.eval()
-            print('-------eval testing: epsilon = 0 -------')
+            print('-------eval testing -------')
             for _ in range(int(v_num*iteration_num/step_num)):
                 exp_buffer_val, obs_val, reward_val = fresh_exp_buffer(exp_buffer_val, rlnnet, envs_val, obs_val, 0, cuda0, reward_val,
                                                        10000, 11000,True)
-            print('length buffer: ' + str(len(exp_buffer_val)))
+            # print('length buffer: ' + str(len(exp_buffer_val)))
             print('-------eval end-------')
 
 def getConvMat(states):
@@ -177,7 +177,7 @@ def calc_loss(batch, net, tgt_net, device):
     return nn.MSELoss()(state_action_values, expected_state_action_values)
 
 
-def fresh_exp_buffer(exp_buffer, rlnnet, envs, obs, epsilon, cuda0,reward,buf_start_num,buf_max_num,only_eval_printmode=True):
+def fresh_exp_buffer(exp_buffer, rlnnet, envs, obs, epsilon, cuda0,reward,buf_start_num,buf_max_num,only_eval_printmode=False):
 
     while len(exp_buffer)<buf_start_num:
         exp,obs,done,reward = play_step(rlnnet, envs, obs, epsilon, cuda0,reward)
